@@ -171,11 +171,13 @@ const ResizableText = ({ textData, isSelected, onSelect, onChange }) => {
             fontSize: textData.fontSize * scaleY,
           });
         }}
+        style={{ pointerEvents: 'all' }} // Enable pointer events
       />
       {isSelected && <Transformer ref={trRef} rotateEnabled={true} />}
     </>
   );
 };
+
 
 const CanvasEditor = () => {
   const [elements, setElements] = useState([]);
@@ -271,24 +273,25 @@ const CanvasEditor = () => {
   };
 
   const bringForward = () => {
+    if (!selectedId) return;
     const index = elements.findIndex((el) => el.id === selectedId);
-    if (index < elements.length - 1) {
-      const updated = [...elements];
-      [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
-      setElements(updated);
-      saveHistory(updated);
-    }
+    if (index < 0 || index === elements.length - 1) return;
+    const updated = [...elements];
+    [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
+    setElements(updated);
+    saveHistory(updated);
   };
-
+  
   const sendBackward = () => {
+    if (!selectedId) return;
     const index = elements.findIndex((el) => el.id === selectedId);
-    if (index > 0) {
-      const updated = [...elements];
-      [updated[index], updated[index - 1]] = [updated[index - 1], updated[index]];
-      setElements(updated);
-      saveHistory(updated);
-    }
+    if (index <= 0) return;
+    const updated = [...elements];
+    [updated[index], updated[index - 1]] = [updated[index - 1], updated[index]];
+    setElements(updated);
+    saveHistory(updated);
   };
+  
 
   const saveState = () => {
     localStorage.setItem('canvasState', JSON.stringify(elements));

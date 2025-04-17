@@ -333,42 +333,47 @@ const CanvasEditor = () => {
         }}
       >
         <Layer>
-          {elements.map((el) => {
-            const isSelected = el.id === selectedId;
-            if (el.type === 'image') {
-              return (
-                <URLImage
-                  key={el.id}
-                  image={el}
-                  isSelected={isSelected}
-                  onSelect={() => setSelectedId(el.id)}
-                  onChange={updateElement}
-                />
-              );
-            } else if (el.type === 'text') {
-              return (
-                <ResizableText
-                  key={el.id}
-                  textData={el}
-                  isSelected={isSelected}
-                  onSelect={() => setSelectedId(el.id)}
-                  onChange={updateElement}
-                />
-              );
-            } else if (el.type === 'video') {
-              return (
-                <VideoElement
-                  key={el.id}
-                  videoData={el}
-                  isSelected={isSelected}
-                  onSelect={() => setSelectedId(el.id)}
-                  onChange={updateElement}
-                />
-              );
-            }
-            return null;
-          })}
-        </Layer>
+      {elements.map((el) => {
+        const isSelected = el.id === selectedId;
+        const onSelect = () => setSelectedId(el.id);
+        const onChange = (newAttrs) => updateElement(newAttrs);
+
+        if (el.type === 'image') {
+          return (
+            <URLImage
+              key={el.id}
+              image={el}
+              isSelected={isSelected}
+              onSelect={onSelect}
+              onChange={onChange}
+            />
+          );
+        } else if (el.type === 'video') {
+          return (
+            <VideoElement
+              key={el.id}
+              videoData={el}
+              isSelected={isSelected}
+              onSelect={onSelect}
+              onChange={onChange}
+            />
+          );
+        } else if (el.type === 'text') {
+          return (
+            <ResizableText
+              key={el.id}
+              textData={el}
+              isSelected={isSelected}
+              onSelect={onSelect}
+              onChange={onChange}
+            />
+          );
+        } else {
+          return null;
+        }
+      })}
+    </Layer>
+
       </Stage>
     </div>
   );

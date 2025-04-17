@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Stage, Layer, Image as KonvaImage, Text, Transformer } from 'react-konva';
 import useImage from 'use-image';
 
+// Image component
 const URLImage = ({ image, isSelected, onSelect, onChange }) => {
   const shapeRef = useRef();
   const trRef = useRef();
@@ -36,7 +37,6 @@ const URLImage = ({ image, isSelected, onSelect, onChange }) => {
           const scaleY = node.scaleY();
           node.scaleX(1);
           node.scaleY(1);
-
           onChange({
             ...image,
             x: node.x(),
@@ -52,6 +52,7 @@ const URLImage = ({ image, isSelected, onSelect, onChange }) => {
   );
 };
 
+// Video component
 const VideoElement = ({ videoData, isSelected, onSelect, onChange }) => {
   const shapeRef = useRef();
   const trRef = useRef();
@@ -132,6 +133,7 @@ const VideoElement = ({ videoData, isSelected, onSelect, onChange }) => {
   );
 };
 
+// Text component
 const ResizableText = ({ textData, isSelected, onSelect, onChange }) => {
   const shapeRef = useRef();
   const trRef = useRef();
@@ -158,10 +160,8 @@ const ResizableText = ({ textData, isSelected, onSelect, onChange }) => {
           const node = shapeRef.current;
           const scaleX = node.scaleX();
           const scaleY = node.scaleY();
-
           node.scaleX(1);
           node.scaleY(1);
-
           onChange({
             ...textData,
             x: node.x(),
@@ -171,14 +171,13 @@ const ResizableText = ({ textData, isSelected, onSelect, onChange }) => {
             fontSize: textData.fontSize * scaleY,
           });
         }}
-        style={{ pointerEvents: 'all' }} // Enable pointer events
       />
       {isSelected && <Transformer ref={trRef} rotateEnabled={true} />}
     </>
   );
 };
 
-
+// Main CanvasEditor
 const CanvasEditor = () => {
   const [elements, setElements] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
@@ -281,7 +280,7 @@ const CanvasEditor = () => {
     setElements(updated);
     saveHistory(updated);
   };
-  
+
   const sendBackward = () => {
     if (!selectedId) return;
     const index = elements.findIndex((el) => el.id === selectedId);
@@ -291,7 +290,6 @@ const CanvasEditor = () => {
     setElements(updated);
     saveHistory(updated);
   };
-  
 
   const saveState = () => {
     localStorage.setItem('canvasState', JSON.stringify(elements));
@@ -324,24 +322,25 @@ const CanvasEditor = () => {
         <button onClick={saveState}>Save</button>
         <button onClick={loadState}>Load</button>
       </div>
+
       <Stage
         width={window.innerWidth}
-        height={600}
+        height={window.innerHeight}
         ref={stageRef}
         onMouseDown={(e) => {
-          if (e.target === e.target.getStage()) {
-            setSelectedId(null);
-          }
+          const clickedOnEmpty = e.target === e.target.getStage();
+          if (clickedOnEmpty) setSelectedId(null);
         }}
       >
         <Layer>
           {elements.map((el) => {
+            const isSelected = el.id === selectedId;
             if (el.type === 'image') {
               return (
                 <URLImage
                   key={el.id}
                   image={el}
-                  isSelected={el.id === selectedId}
+                  isSelected={isSelected}
                   onSelect={() => setSelectedId(el.id)}
                   onChange={updateElement}
                 />
@@ -351,7 +350,7 @@ const CanvasEditor = () => {
                 <ResizableText
                   key={el.id}
                   textData={el}
-                  isSelected={el.id === selectedId}
+                  isSelected={isSelected}
                   onSelect={() => setSelectedId(el.id)}
                   onChange={updateElement}
                 />
@@ -361,7 +360,7 @@ const CanvasEditor = () => {
                 <VideoElement
                   key={el.id}
                   videoData={el}
-                  isSelected={el.id === selectedId}
+                  isSelected={isSelected}
                   onSelect={() => setSelectedId(el.id)}
                   onChange={updateElement}
                 />
